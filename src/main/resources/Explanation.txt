@@ -1,0 +1,32 @@
+I have created different POJOs for Product, Customer, CartItem and Order.
+
+Product POJO has getters and setters methods written explicitly.
+
+While for other POJOs like Customer, CartItem and Order, I am leveraging @Data annotation from Lombok.
+
+CartItem class is implementing Comparable Interface
+because we shall create shopping carts where we want to have items in cart sorted by product quantity.
+Since CartItem implements Comparable Interface, we have implemented compareTo method in its POJO.
+
+Apart from member variables and Constructor,
+Order POJO has calculateTotalCost method to calculate the total order value.
+
+Online Store Application is the class which we shall instantiate to create our store.
+This class has member variable:
+    (i)     products - stores details of all products in our store.
+    (ii)    customerSet - stores details of all customers in our store.
+    (iii)   cartItemMap - stores all active carts in our store
+                          key - customerId
+                          value - TreeSet<CartItem>
+    (iv)    orderHistory - stores all orders of our app
+                           key - orderId
+                           value - Order
+Constructor in Online Store Application just initializes empty product list, empty customer set,
+empty shopping cart and empty orders map
+Online Store App class has various member methods that provide functionalities to:
+getProduct, addProduct, updateProduct, adCustomer, placeOrder, addToCart, displayProducts, displayCustomer, displayOrders
+
+In Test Class, I am creating an object of Online Store App.
+On this object of OnlineStoreApp, I am calling various methods:
+Adding products to our Online Store, adding Customers to our Online Store, adding Items to Customer's Cart,
+Placing Orders for Customers, DisplayingProducts, DisplayCustomers, DisplayOrders.
