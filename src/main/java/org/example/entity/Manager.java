@@ -50,13 +50,14 @@ public class Manager extends User {
             System.out.println("Enter 3 to View All Products");
             System.out.println("Enter 4 to View All Orders");
             System.out.println("Enter 5 to View All Customers");
-            System.out.println("Enter 6 to Generate Excel file");
+            System.out.println("Enter 6 to Generate Excel file for customers data");
+            System.out.println("Enter 7 to Generate Excel file for Products data");
         }
         if (actions.contains("remove")) {
-            System.out.println("Enter 7 to Remove Product");
-            System.out.println("Enter 8 to Remove Customer");
+            System.out.println("Enter 8 to Remove Product");
+            System.out.println("Enter 9 to Remove Customer");
         }
-        System.out.println("Enter 9 to Sign Out");
+        System.out.println("Enter 10 to Sign Out");
     }
 
     @Override
@@ -117,6 +118,14 @@ public class Manager extends User {
                     break;
                 }
                 case 7: {
+                    if(actions.contains("view")) {
+                        Product.generateExcelSheet(store);
+                    } else {
+                        System.out.println("You don't have permission to Generate Excel Sheet");
+                    }
+                    break;
+                }
+                case 8: {
                     if (actions.contains("remove")) {
                         Product.removeProductFromStore(store);
                     } else {
@@ -124,7 +133,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 8: {
+                case 9: {
                     if (actions.contains("remove")) {
                         Customer.removeCustomerFromStore(store);
                     } else {
@@ -132,13 +141,13 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 9: {
+                case 10: {
                     break;
                 }
                 default: {
                     System.out.println("Please Enter Valid Choice");
                 }
             }
-        } while (choice != 9);
+        } while (choice != 10);
     }
 }

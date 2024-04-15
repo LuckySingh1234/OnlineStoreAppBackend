@@ -4,12 +4,16 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.OnlineStoreApp;
 import org.example.utils.InputUtils;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -57,8 +61,22 @@ public class Customer extends User {
 
     public static void generateExcelSheet(OnlineStoreApp store) {
         String[] headers = {"CustomerId", "Name", "Email", "Password"};
-        String filePath = "data/all_customers.xlsx";
-        try (Workbook workbook = new XSSFWorkbook()) {
+        String filePath = "data/all_store_data.xlsx";
+        String sheetName = "Customers";
+        try {
+            Workbook workbook;
+            if (Files.exists(Paths.get(filePath))) {
+                // If the file exists, open it
+                FileInputStream fis = new FileInputStream(filePath);
+                workbook = WorkbookFactory.create(fis);
+            } else {
+                // If the file doesn't exist, create a new workbook
+                workbook = new XSSFWorkbook();
+            }
+            int indexToDelete = workbook.getSheetIndex(sheetName);
+            if (indexToDelete != -1) {
+                workbook.removeSheetAt(indexToDelete);
+            }
             Sheet sheet = workbook.createSheet("Customers");
             // Create header row
             Row headerRow = sheet.createRow(0);

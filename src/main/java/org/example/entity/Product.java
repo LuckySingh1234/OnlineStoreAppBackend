@@ -1,8 +1,19 @@
 package org.example.entity;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.OnlineStoreApp;
 import org.example.utils.InputUtils;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Product {
@@ -85,6 +96,64 @@ public class Product {
             System.out.println("Product Removed Successfully");
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public static void generateExcelSheet(OnlineStoreApp store) {
+        String[] headers = {"ProductId", "Name", "Description", "Price", "Quantity"};
+        String filePath = "data/all_store_data.xlsx";
+        String sheetName = "Products";
+        try {
+            Workbook workbook;
+            if (Files.exists(Paths.get(filePath))) {
+                // If the file exists, open it
+                FileInputStream fis = new FileInputStream(filePath);
+                workbook = WorkbookFactory.create(fis);
+            } else {
+                // If the file doesn't exist, create a new workbook
+                workbook = new XSSFWorkbook();
+            }
+            int indexToDelete = workbook.getSheetIndex(sheetName);
+            if (indexToDelete != -1) {
+                workbook.removeSheetAt(indexToDelete);
+            }
+            Sheet sheet = workbook.createSheet("Products");
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+            }
+            // Create data rows
+            int rowNum = 0;
+            for (Product product : store.getProducts()) {
+                int colNum = 0;
+                Row row = sheet.createRow(rowNum + 1);
+                Cell cell = row.createCell(colNum);
+                cell.setCellValue(product.getProductId());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(product.getName());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(product.getDescription());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(product.getPrice());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(product.getStockQuantity());
+                rowNum++;
+            }
+            // Write the Excel file
+            try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
+                workbook.write(outputStream);
+                System.out.println("Excel file created successfully.");
+            } catch (IOException e) {
+                System.out.println("Error creating Excel file: " + e.getMessage());
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating Excel file: " + e.getMessage());
         }
     }
 }
