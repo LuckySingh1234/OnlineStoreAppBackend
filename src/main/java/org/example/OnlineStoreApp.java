@@ -9,13 +9,6 @@ import org.example.entity.Product;
 import org.example.entity.User;
 import org.example.utils.InputUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,22 +31,6 @@ public class OnlineStoreApp {
     public OnlineStoreApp() {
         products = new ArrayList<>();
         customerSet = new HashSet<>();
-        Path path = Paths.get("data/CustomerCredentials.csv");
-        try {
-            BufferedReader reader = Files.newBufferedReader(path);
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] storedCredentials = line.split(",");
-                String storedId = storedCredentials[0];
-                String storedName = storedCredentials[1];
-                String storedEmail = storedCredentials[2];
-                String storedPassword = storedCredentials[3];
-                customerSet.add(new Customer(storedId, storedName, storedEmail, storedPassword));
-            }
-        } catch (Exception e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
         shoppingCart = new TreeMap<>();
         orderHistory = new TreeMap<>();
     }
@@ -124,19 +101,6 @@ public class OnlineStoreApp {
             throw new RuntimeException("Email Already In Use. Please register with another email.");
         }
         customerSet.add(customer);
-        appendToFile(customer.getId() + "," + customer.getName() +
-                "," + customer.getEmail() + "," + customer.getPassword() + "\n", "data/CustomerCredentials.csv");
-    }
-
-    public void appendToFile(String line, String filePath) {
-        try {
-            Path path = Paths.get(filePath);
-            try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
-                writer.write(line);
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading/writing data to the file: " + e.getMessage());
-        }
     }
 
     public void removeCustomer(String customerId) throws Exception {
@@ -347,7 +311,7 @@ public class OnlineStoreApp {
                     System.out.println("Please enter your store credentials:");
                     String email = InputUtils.inputStringWithRegexCheck("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", "Please Enter Email:", "Email Id is Incorrect");
                     String password = InputUtils.inputString("Please Enter Your Password", "Please Enter a Valid Password");
-                    User user = Customer.login(email, password);
+                    User user = Customer.login(email, password, customerSet);
                     if (user != null) {
                         return user;
                     } else {

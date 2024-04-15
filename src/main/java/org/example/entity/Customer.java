@@ -8,37 +8,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.OnlineStoreApp;
 import org.example.utils.InputUtils;
 
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Customer extends User {
     public Customer(String id, String name, String email, String password) {
         super(id, name, email, password);
     }
 
-    public static Customer login(String email, String password) {
-        Path path = Paths.get("data/CustomerCredentials.csv");
-        try {
-            BufferedReader reader = Files.newBufferedReader(path);
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] storedCredentials = line.split(",");
-                String storedEmail = storedCredentials[2];
-                String storedPassword = storedCredentials[3];
-                if (email.equals(storedEmail) && password.equals(storedPassword)) {
-                    System.out.println("Logged In Successfully");
-                    System.out.println("Welcome " + storedCredentials[1]);
-                    return new Customer(storedCredentials[0], storedCredentials[1], storedCredentials[2], storedCredentials[3]);
-                }
+    public static Customer login(String email, String password, Set<Customer> customerSet) {
+        for(Customer c : customerSet) {
+            if (email.equals(c.getEmail()) && password.equals(c.getPassword())) {
+                System.out.println("Logged In Successfully");
+                System.out.println("Welcome " + c.getName());
+                return new Customer(c.getId(), c.getName(), c.getEmail(), c.getPassword());
             }
-        } catch (Exception e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
         return null;
     }
