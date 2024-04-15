@@ -1,5 +1,6 @@
 package org.example;
 
+import lombok.Data;
 import org.example.entity.CartItem;
 import org.example.entity.Customer;
 import org.example.entity.Manager;
@@ -27,6 +28,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Data
 public class OnlineStoreApp {
     private List<Product> products;
     private Set<Customer> customerSet;

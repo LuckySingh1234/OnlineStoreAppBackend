@@ -52,12 +52,13 @@ public class Manager extends User {
             System.out.println("Enter 3 to View All Products");
             System.out.println("Enter 4 to View All Orders");
             System.out.println("Enter 5 to View All Customers");
+            System.out.println("Enter 6 to Generate Excel file");
         }
         if (actions.contains("remove")) {
-            System.out.println("Enter 6 to Remove Product");
-            System.out.println("Enter 7 to Remove Customer");
+            System.out.println("Enter 7 to Remove Product");
+            System.out.println("Enter 8 to Remove Customer");
         }
-        System.out.println("Enter 8 to Sign Out");
+        System.out.println("Enter 9 to Sign Out");
     }
 
     @Override
@@ -73,7 +74,7 @@ public class Manager extends User {
                     if (actions.contains("add")) {
                         Product.addProductToStore(store);
                     } else {
-                        System.out.println("Please Enter a Valid Choice");
+                        System.out.println("You don't have permission to add product");
                     }
                     break;
                 }
@@ -81,7 +82,7 @@ public class Manager extends User {
                     if (actions.contains("add")) {
                         Customer.addCustomerToStore(store);
                     } else {
-                        System.out.println("Please Enter a Valid Choice");
+                        System.out.println("You don't have permission to add customer");
                     }
                     break;
                 }
@@ -89,7 +90,7 @@ public class Manager extends User {
                     if (actions.contains("view")) {
                         store.displayProducts();
                     } else {
-                        System.out.println("Please Enter a Valid Choice");
+                        System.out.println("You don't have permission to view products");
                     }
                     break;
                 }
@@ -97,7 +98,7 @@ public class Manager extends User {
                     if (actions.contains("view")) {
                         store.displayOrders();
                     } else {
-                        System.out.println("Please Enter a Valid Choice");
+                        System.out.println("You don't have permission to view orders");
                     }
                     break;
                 }
@@ -105,32 +106,41 @@ public class Manager extends User {
                     if (actions.contains("view")) {
                         store.displayCustomers();
                     } else {
-                        System.out.println("Please Enter a Valid Choice");
+                        System.out.println("You don't have permission to view customers");
                     }
                     break;
                 }
                 case 6: {
+                    if(actions.contains("view")) {
+                        Customer.generateExcelSheet(store);
+                    } else {
+                        System.out.println("You don't have permission to Generate Excel Sheet");
+                    }
+                    break;
+                }
+                case 7: {
                     if (actions.contains("remove")) {
                         Product.removeProductFromStore(store);
                     } else {
-                        System.out.println("Please Enter a Valid Choice");
-                    }
-                    break;
-                } case 7: {
-                    if (actions.contains("remove")) {
-                        Customer.removeCustomerFromStore(store);
-                    } else {
-                        System.out.println("Please Enter a Valid Choice");
+                        System.out.println("You don't have permission to remove products");
                     }
                     break;
                 }
                 case 8: {
+                    if (actions.contains("remove")) {
+                        Customer.removeCustomerFromStore(store);
+                    } else {
+                        System.out.println("You don't have permission to remove customers ");
+                    }
+                    break;
+                }
+                case 9: {
                     break;
                 }
                 default: {
                     System.out.println("Please Enter Valid Choice");
                 }
             }
-        } while (choice != 8);
+        } while (choice != 9);
     }
 }

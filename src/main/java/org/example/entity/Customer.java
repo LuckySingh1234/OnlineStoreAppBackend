@@ -1,9 +1,16 @@
 package org.example.entity;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.OnlineStoreApp;
 import org.example.utils.InputUtils;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,6 +66,47 @@ public class Customer extends User {
             System.out.println("Customer Removed Successfully");
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public static void generateExcelSheet(OnlineStoreApp store) {
+        String[] headers = {"CustomerId", "Name", "Email", "Password"};
+        String filePath = "data/all_customers.xlsx";
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Customers");
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+            }
+            // Create data rows
+            int rowNum = 0;
+            for (Customer customer : store.getCustomerSet()) {
+                int colNum = 0;
+                Row row = sheet.createRow(rowNum + 1);
+                Cell cell = row.createCell(colNum);
+                cell.setCellValue(customer.getId());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(customer.getName());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(customer.getEmail());
+                colNum++;
+                cell = row.createCell(colNum);
+                cell.setCellValue(customer.getPassword());
+                rowNum++;
+            }
+            // Write the Excel file
+            try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
+                workbook.write(outputStream);
+                System.out.println("Excel file created successfully.");
+            } catch (IOException e) {
+                System.out.println("Error creating Excel file: " + e.getMessage());
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating Excel file: " + e.getMessage());
         }
     }
 
