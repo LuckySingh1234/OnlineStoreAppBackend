@@ -148,12 +148,94 @@ public class Product {
             // Write the Excel file
             try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
                 workbook.write(outputStream);
-                System.out.println("Excel file created successfully.");
+                System.out.println("Excel file created successfully at the below location");
+                System.out.println(Paths.get(filePath).toAbsolutePath());
             } catch (IOException e) {
                 System.out.println("Error creating Excel file: " + e.getMessage());
             }
         } catch (IOException e) {
             System.out.println("Error creating Excel file: " + e.getMessage());
+        }
+    }
+
+    public static void importProductsFromExcel(OnlineStoreApp store) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter the file path");
+        String filePath = sc.nextLine();
+        try {
+            Workbook workbook;
+            if (Files.exists(Paths.get(filePath))) {
+                FileInputStream fis = new FileInputStream(filePath);
+                workbook = WorkbookFactory.create(fis);
+                Sheet sheet = workbook.getSheet("Products");
+                StringBuilder excelErrors = new StringBuilder();
+                if (sheet != null) {
+                    for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                        Row row = sheet.getRow(i);
+                        Cell cell = row.getCell(0);
+                        String productId = cell.getStringCellValue();
+                        if (!productId.matches("^P#[0-9A-Z]{5}$")) {
+                            excelErrors.append("Product Id does not match the pattern at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(1);
+                        String name = cell.getStringCellValue();
+                        if (!name.matches("^[A-Za-z0-9][A-Za-z 0-9 ]{1,20}$")) {
+                            excelErrors.append("Product Name does not match the pattern at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(2);
+                        String desc = cell.getStringCellValue();
+                        if (!desc.matches("^[A-Za-z0-9][A-Za-z 0-9 ]{1,50}$")) {
+                            excelErrors.append("Product Description does not match the pattern at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(3);
+                        Double price;
+                        try {
+                            price = cell.getNumericCellValue();
+                            if (price <= 0) {
+                                excelErrors.append("Product Price is less than or equal to zero at Row: ").append(i + 1).append("\n");
+                                continue;
+                            }
+                        } catch (Exception e) {
+                            excelErrors.append("Incorrect Price at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(4);
+                        Integer qty;
+                        try {
+                            Double doubleQty = cell.getNumericCellValue();
+                            qty = doubleQty.intValue();
+                            if (doubleQty.compareTo(qty.doubleValue()) != 0) {
+                                excelErrors.append("Stock Quantity is fractional at Row: ").append(i + 1).append("\n");
+                                continue;
+                            }
+                            if (qty < 0) {
+                                excelErrors.append("Stock Quantity is negative at Row: ").append(i + 1).append("\n");
+                                continue;
+                            }
+                        } catch (Exception e) {
+                            excelErrors.append("Incorrect Stock Quantity at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        Product p = new Product(productId, name, desc, price, qty);
+                        try {
+                            store.addProduct(p);
+                        } catch (Exception e) {
+                            excelErrors.append(e.getMessage()).append(" for Row: ").append(i + 1).append("\n");
+                        }
+                    }
+                    System.out.println("Products Loaded Successfully.");
+                    System.err.println(excelErrors);
+                } else {
+                    System.out.println("Products sheet is not available in the excel file");
+                }
+            } else {
+                System.out.println("File does not exist at the specified path");
+            }
+        } catch (IOException e) {
+            System.out.println("Error opening Excel file: " + e.getMessage());
         }
     }
 }

@@ -105,13 +105,18 @@ public class Customer extends User {
             // Write the Excel file
             try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
                 workbook.write(outputStream);
-                System.out.println("Excel file created successfully.");
+                System.out.println("Excel file created successfully at the below location");
+                System.out.println(Paths.get(filePath).toAbsolutePath());
             } catch (IOException e) {
                 System.out.println("Error creating Excel file: " + e.getMessage());
             }
         } catch (IOException e) {
             System.out.println("Error creating Excel file: " + e.getMessage());
         }
+    }
+
+    public static void importCustomersFromExcel(OnlineStoreApp store) {
+
     }
 
     @Override
