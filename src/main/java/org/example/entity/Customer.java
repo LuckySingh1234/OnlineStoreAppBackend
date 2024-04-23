@@ -35,7 +35,7 @@ public class Customer extends User {
 
     public static void addCustomerToStore(OnlineStoreApp store) {
         String id = store.getNextCustomerId();
-        String name = InputUtils.inputStringWithRegexCheck("^[A-Za-z][A-Za-z ]{0,20}$", "Please Enter Customer's Name", "Please Enter a Valid Name");
+        String name = InputUtils.inputStringWithRegexCheck("^[A-Za-z]{1,20}$", "Please Enter Customer's Name", "Please Enter a Valid Name");
         String email = InputUtils.inputStringWithRegexCheck("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", "Please Enter Email:", "Email Id is Incorrect");
         String password = InputUtils.inputString("Please Enter Customer's Password", "Please Enter a Valid Password");
         Customer currentCustomer = new Customer(id, name, email, password);
@@ -116,7 +116,61 @@ public class Customer extends User {
     }
 
     public static void importCustomersFromExcel(OnlineStoreApp store) {
-
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter the file path");
+        String filePath = sc.nextLine();
+        try {
+            Workbook workbook;
+            if (Files.exists(Paths.get(filePath))) {
+                FileInputStream fis = new FileInputStream(filePath);
+                workbook = WorkbookFactory.create(fis);
+                Sheet sheet = workbook.getSheet("Customers");
+                StringBuilder excelErrors = new StringBuilder();
+                if (sheet != null) {
+                    for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                        Row row = sheet.getRow(i);
+                        Cell cell = row.getCell(0);
+                        String customerId = cell.getStringCellValue();
+                        if (!customerId.matches("^C#[0-9A-Z]{5}$")) {
+                            excelErrors.append("Customer Id does not match the pattern at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(1);
+                        String name = cell.getStringCellValue();
+                        if (!name.matches("^[A-Za-z][A-Za-z ]{0,20}$")) {
+                            excelErrors.append("Customer Name does not match the pattern at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(2);
+                        String email = cell.getStringCellValue();
+                        if (!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+                            excelErrors.append("Customer email does not match the pattern at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        cell = row.getCell(3);
+                        String password = cell.getStringCellValue();
+                        if (password == null || password.isEmpty()) {
+                            excelErrors.append("Customer password is empty at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        Customer c = new Customer(customerId, name, email, password);
+                        try {
+                            store.addCustomer(c);
+                        } catch (Exception e) {
+                            excelErrors.append(e.getMessage()).append(" for Row: ").append(i + 1).append("\n");
+                        }
+                    }
+                    System.out.println("Customers Loaded Successfully.");
+                    System.out.println(excelErrors);
+                } else {
+                    System.out.println("Customers sheet is not available in the excel file");
+                }
+            } else {
+                System.out.println("File does not exist at the specified path");
+            }
+        } catch (IOException e) {
+            System.out.println("Error opening Excel file: " + e.getMessage());
+        }
     }
 
     @Override

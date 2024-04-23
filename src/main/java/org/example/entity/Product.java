@@ -1,5 +1,7 @@
 package org.example.entity;
 
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,8 +16,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Scanner;
 
+@Builder
 public class Product {
     private String productId;
     private String name;
@@ -84,6 +88,84 @@ public class Product {
             System.out.println(e.getMessage());
         }
         System.out.println("Product Added Successfully");
+    }
+
+    public static void editProduct(OnlineStoreApp store) {
+        String id = InputUtils.inputStringWithRegexCheck("^P#[0-9A-Z]{5}$", "Please Enter Product Id", "Product Id should be of seven characters and must start with P#");
+
+        try {
+            Product existingProduct = store.getProduct(id);
+
+            Scanner sc = new Scanner(System.in);
+
+            System.out.println("Do you want to edit product name ? Yes or No");
+            String ans = sc.nextLine();
+            String name = null;
+            while (true) {
+                if (ans.equalsIgnoreCase("YES")) {
+                    name = InputUtils.inputStringWithRegexCheck("^[A-Za-z0-9][A-Za-z 0-9 ]{1,20}$", "Please Enter Product Name", "Please Enter a Valid Product Name");
+                    break;
+                } else if (ans.equalsIgnoreCase("NO")) {
+                    break;
+                } else {
+                    System.out.println("Please answer in YES or NO.");
+                }
+            }
+
+            System.out.println("Do you want to edit product description ? Yes or No");
+            ans = sc.nextLine();
+            String desc = null;
+            while (true) {
+                if (ans.equalsIgnoreCase("YES")) {
+                    desc = InputUtils.inputStringWithRegexCheck("^[A-Za-z0-9][A-Za-z 0-9 ]{1,50}$", "Please Enter Product Description", "Please Enter a Valid Product Description");
+                    break;
+                } else if (ans.equalsIgnoreCase("NO")) {
+                    break;
+                } else {
+                    System.out.println("Please answer in YES or NO.");
+                }
+            }
+
+            System.out.println("Do you want to edit product price ? Yes or No");
+            ans = sc.nextLine();
+            Double price = null;
+            while (true) {
+                if (ans.equalsIgnoreCase("YES")) {
+                    price = InputUtils.inputDouble("Please Enter Product Price", "Please Enter a Valid Price");
+                    break;
+                } else if (ans.equalsIgnoreCase("NO")) {
+                    break;
+                } else {
+                    System.out.println("Please answer in YES or NO.");
+                }
+            }
+
+            System.out.println("Do you want to edit product quantity ? Yes or No");
+            ans = sc.nextLine();
+            Integer quantity = null;
+            while (true) {
+                if (ans.equalsIgnoreCase("YES")) {
+                    quantity = InputUtils.inputInteger("Please Enter Product Quantity", "PLease Enter a Valid Quantity");
+                    break;
+                } else if (ans.equalsIgnoreCase("NO")) {
+                    break;
+                } else {
+                    System.out.println("Please answer in YES or NO.");
+                }
+            }
+
+            Product updatedProduct = Product.builder()
+                    .productId(id)
+                    .name(Optional.ofNullable(name).orElse(existingProduct.getName()))
+                    .description(Optional.ofNullable(desc).orElse(existingProduct.getDescription()))
+                    .price(Optional.ofNullable(price).orElse(existingProduct.getPrice()))
+                    .stockQuantity(Optional.ofNullable(quantity).orElse(existingProduct.getStockQuantity()))
+                    .build();
+            store.updateProduct(updatedProduct);
+            System.out.println("Product Updated Successfully!!");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void removeProductFromStore(OnlineStoreApp store) {
@@ -180,7 +262,7 @@ public class Product {
                         }
                         cell = row.getCell(1);
                         String name = cell.getStringCellValue();
-                        if (!name.matches("^[A-Za-z0-9][A-Za-z 0-9 ]{1,20}$")) {
+                        if (!name.matches("^[A-Za-z0-9\s]{1,20}$")) {
                             excelErrors.append("Product Name does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
@@ -227,7 +309,7 @@ public class Product {
                         }
                     }
                     System.out.println("Products Loaded Successfully.");
-                    System.err.println(excelErrors);
+                    System.out.println(excelErrors);
                 } else {
                     System.out.println("Products sheet is not available in the excel file");
                 }

@@ -97,6 +97,10 @@ public class OnlineStoreApp {
     // Method to add a new customer to the system
     public void addCustomer(Customer customer) {
         Set<String> allEmails = customerSet.stream().map(Customer::getEmail).collect(Collectors.toSet());
+        Set<String> allCustomerIds = customerSet.stream().map(Customer::getId).collect(Collectors.toSet());
+        if (allCustomerIds.contains(customer.getId())) {
+            throw new RuntimeException("Customer with given id already exists.");
+        }
         if (allEmails.contains(customer.getEmail())) {
             throw new RuntimeException("Email Already In Use. Please register with another email.");
         }
@@ -290,10 +294,10 @@ public class OnlineStoreApp {
 
     public User landingPage() {
         System.out.println("Welcome ----------------------------");
-        System.out.println("Are you a customer or a manager ? ----------------------");
         Scanner sc = new Scanner(System.in);
-        String ans = sc.nextLine();
         while (true) {
+            System.out.println("Are you a customer or a manager ? ----------------------");
+            String ans = sc.nextLine();
             if ("Manager".equalsIgnoreCase(ans)) {
                 while (true) {
                     System.out.println("Please enter your store credentials:");
@@ -320,7 +324,6 @@ public class OnlineStoreApp {
                 }
             } else {
                 System.out.println("Enter either manager or customer");
-                return null;
             }
         }
     }

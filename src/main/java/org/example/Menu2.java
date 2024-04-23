@@ -9,6 +9,6 @@ public class Menu2 {
         do {
             user = store.landingPage();
             user.performActions(store);
-        } while (user != null);
+        } while (true);
     }
 }

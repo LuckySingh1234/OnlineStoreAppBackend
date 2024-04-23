@@ -45,21 +45,22 @@ public class Manager extends User {
         if (actions.contains("add")) {
             System.out.println("Enter 1 to Add Product");
             System.out.println("Enter 2 to Add Customer");
-            System.out.println("Enter 3 Import Products from File");
-            System.out.println("Enter 4 Import Customers from File");
+            System.out.println("Enter 3 to Edit Product");
+            System.out.println("Enter 4 Import Products from File");
+            System.out.println("Enter 5 Import Customers from File");
         }
         if (actions.contains("view")) {
-            System.out.println("Enter 5 to View All Products");
-            System.out.println("Enter 6 to View All Orders");
-            System.out.println("Enter 7 to View All Customers");
-            System.out.println("Enter 8 to Generate Excel file for customers data");
-            System.out.println("Enter 9 to Generate Excel file for Products data");
+            System.out.println("Enter 6 to View All Products");
+            System.out.println("Enter 7 to View All Orders");
+            System.out.println("Enter 8 to View All Customers");
+            System.out.println("Enter 9 to Generate Excel file for customers data");
+            System.out.println("Enter 10 to Generate Excel file for Products data");
         }
         if (actions.contains("remove")) {
-            System.out.println("Enter 10 to Remove Product");
-            System.out.println("Enter 11 to Remove Customer");
+            System.out.println("Enter 11 to Remove Product");
+            System.out.println("Enter 12 to Remove Customer");
         }
-        System.out.println("Enter 12 to Sign Out");
+        System.out.println("Enter 13 to Sign Out");
     }
 
     @Override
@@ -88,6 +89,14 @@ public class Manager extends User {
                     break;
                 }
                 case 3: {
+                    if(actions.contains("add")) {
+                        Product.editProduct(store);
+                    } else {
+                        System.out.println("You don't have permission to edit product");
+                    }
+                    break;
+                }
+                case 4: {
                     if (actions.contains("add")) {
                         Product.importProductsFromExcel(store);
                     } else {
@@ -95,7 +104,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 4: {
+                case 5: {
                     if (actions.contains("add")) {
                         Customer.importCustomersFromExcel(store);
                     } else {
@@ -103,7 +112,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 5: {
+                case 6: {
                     if (actions.contains("view")) {
                         store.displayProducts();
                     } else {
@@ -111,7 +120,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 6: {
+                case 7: {
                     if (actions.contains("view")) {
                         store.displayOrders();
                     } else {
@@ -119,7 +128,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 7: {
+                case 8: {
                     if (actions.contains("view")) {
                         store.displayCustomers();
                     } else {
@@ -127,7 +136,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 8: {
+                case 9: {
                     if(actions.contains("view")) {
                         Customer.generateExcelSheet(store);
                     } else {
@@ -135,7 +144,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 9: {
+                case 10: {
                     if(actions.contains("view")) {
                         Product.generateExcelSheet(store);
                     } else {
@@ -143,7 +152,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 10: {
+                case 11: {
                     if (actions.contains("remove")) {
                         Product.removeProductFromStore(store);
                     } else {
@@ -151,7 +160,7 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 11: {
+                case 12: {
                     if (actions.contains("remove")) {
                         Customer.removeCustomerFromStore(store);
                     } else {
@@ -159,13 +168,13 @@ public class Manager extends User {
                     }
                     break;
                 }
-                case 12: {
+                case 13: {
                     break;
                 }
                 default: {
                     System.out.println("Please Enter Valid Choice");
                 }
             }
-        } while (choice != 12);
+        } while (choice != 13);
     }
 }
