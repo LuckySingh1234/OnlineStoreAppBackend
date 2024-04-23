@@ -3,6 +3,7 @@ package org.example.entity;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -259,26 +260,66 @@ public class Product {
                 if (sheet != null) {
                     for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                         Row row = sheet.getRow(i);
+
                         Cell cell = row.getCell(0);
-                        String productId = cell.getStringCellValue();
+                        String productId;
+                        if (cell == null) {
+                            excelErrors.append("Product Id is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        if (cell.getCellType() == CellType.STRING) {
+                            productId = cell.getStringCellValue();
+                        } else {
+                            productId = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (!productId.matches("^P#[0-9A-Z]{5}$")) {
                             excelErrors.append("Product Id does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         cell = row.getCell(1);
-                        String name = cell.getStringCellValue();
+                        if (cell == null) {
+                            excelErrors.append("Product Name is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        String name;
+                        if (cell.getCellType() == CellType.STRING) {
+                            name = cell.getStringCellValue();
+                        } else {
+                            name = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (!name.matches("^[A-Za-z0-9\s]{1,20}$")) {
                             excelErrors.append("Product Name does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
+
                         cell = row.getCell(2);
-                        String desc = cell.getStringCellValue();
+                        if (cell == null) {
+                            excelErrors.append("Product Description is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        String desc;
+                        if (cell.getCellType() == CellType.STRING) {
+                            desc = cell.getStringCellValue();
+                        } else {
+                            desc = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (!desc.matches("^[A-Za-z0-9][A-Za-z 0-9 ]{1,50}$")) {
                             excelErrors.append("Product Description does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         cell = row.getCell(3);
+                        if (cell == null) {
+                            excelErrors.append("Product Price is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
                         Double price;
+                        if (cell.getCellType() == CellType.STRING) {
+                            excelErrors.append("Product Price has string value at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
                         try {
                             price = cell.getNumericCellValue();
                             if (price <= 0) {
@@ -289,8 +330,17 @@ public class Product {
                             excelErrors.append("Incorrect Price at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         cell = row.getCell(4);
+                        if (cell == null) {
+                            excelErrors.append("Product Stock Quantity is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
                         Integer qty;
+                        if (cell.getCellType() == CellType.STRING) {
+                            excelErrors.append("Product Stock Quantity has string value at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
                         try {
                             Double doubleQty = cell.getNumericCellValue();
                             qty = doubleQty.intValue();

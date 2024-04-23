@@ -1,6 +1,7 @@
 package org.example.entity;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -134,30 +135,71 @@ public class Customer extends User {
                 if (sheet != null) {
                     for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                         Row row = sheet.getRow(i);
+
                         Cell cell = row.getCell(0);
-                        String customerId = cell.getStringCellValue();
+                        if (cell == null) {
+                            excelErrors.append("Customer Id is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        String customerId;
+                        if (cell.getCellType() == CellType.STRING) {
+                            customerId = cell.getStringCellValue();
+                        } else {
+                            customerId = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (!customerId.matches("^C#[0-9A-Z]{5}$")) {
                             excelErrors.append("Customer Id does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         cell = row.getCell(1);
-                        String name = cell.getStringCellValue();
+                        if (cell == null) {
+                            excelErrors.append("Customer Name is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        String name;
+                        if (cell.getCellType() == CellType.STRING) {
+                            name = cell.getStringCellValue();
+                        } else {
+                            name = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (!name.matches("^[A-Za-z][A-Za-z ]{0,20}$")) {
                             excelErrors.append("Customer Name does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         cell = row.getCell(2);
-                        String email = cell.getStringCellValue();
+                        if (cell == null) {
+                            excelErrors.append("Customer Email is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        String email;
+                        if (cell.getCellType() == CellType.STRING) {
+                            email = cell.getStringCellValue();
+                        } else {
+                            email = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
                             excelErrors.append("Customer email does not match the pattern at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         cell = row.getCell(3);
-                        String password = cell.getStringCellValue();
+                        if (cell == null) {
+                            excelErrors.append("Customer Password is null at Row: ").append(i + 1).append("\n");
+                            continue;
+                        }
+                        String password;
+                        if (cell.getCellType() == CellType.STRING) {
+                            password = cell.getStringCellValue();
+                        } else {
+                            password = String.valueOf(cell.getNumericCellValue());
+                        }
                         if (password == null || password.isEmpty()) {
                             excelErrors.append("Customer password is empty at Row: ").append(i + 1).append("\n");
                             continue;
                         }
+
                         Customer c = new Customer(customerId, name, email, password);
                         try {
                             store.addCustomer(c);
