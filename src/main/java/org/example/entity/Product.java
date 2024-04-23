@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.OnlineStoreApp;
 import org.example.utils.InputUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -184,6 +185,10 @@ public class Product {
     public static void generateExcelSheet(OnlineStoreApp store) {
         String[] headers = {"ProductId", "Name", "Description", "Price", "Quantity"};
         String filePath = "data/all_store_data.xlsx";
+        File directory = new File(filePath.substring(0, filePath.lastIndexOf("/")));
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
         String sheetName = "Products";
         try {
             Workbook workbook;

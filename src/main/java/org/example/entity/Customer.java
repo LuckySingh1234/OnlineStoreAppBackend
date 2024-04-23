@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.OnlineStoreApp;
 import org.example.utils.InputUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -62,6 +63,10 @@ public class Customer extends User {
     public static void generateExcelSheet(OnlineStoreApp store) {
         String[] headers = {"CustomerId", "Name", "Email", "Password"};
         String filePath = "data/all_store_data.xlsx";
+        File directory = new File(filePath.substring(0, filePath.lastIndexOf("/")));
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
         String sheetName = "Customers";
         try {
             Workbook workbook;
