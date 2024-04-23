@@ -9,6 +9,9 @@ import org.example.entity.Product;
 import org.example.entity.User;
 import org.example.utils.InputUtils;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class OnlineStoreApp {
+    private String managerCredentialsFilePath;
     private List<Product> products;
     private Set<Customer> customerSet;
     private Map<String, Set<CartItem>> shoppingCart;
@@ -33,6 +37,22 @@ public class OnlineStoreApp {
         customerSet = new HashSet<>();
         shoppingCart = new TreeMap<>();
         orderHistory = new TreeMap<>();
+        managerCredentialsFilePath = addManagerCredentialsFilePath();
+    }
+
+    public String addManagerCredentialsFilePath() {
+        String credentialsFilePath = null;
+        while (true) {
+            credentialsFilePath = InputUtils.inputString("Enter your manager credentials file path:", "File Path cannot be empty");
+            Path path = Paths.get(credentialsFilePath);
+            boolean fileExists = Files.exists(path);
+            if (fileExists) {
+                break;
+            } else {
+                System.out.println("File does not exist at the specified path");
+            }
+        }
+        return credentialsFilePath;
     }
 
     public Product getProduct(String productId) {
@@ -303,7 +323,7 @@ public class OnlineStoreApp {
                     System.out.println("Please enter your store credentials:");
                     String email = InputUtils.inputStringWithRegexCheck("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", "Please Enter Email:", "Email Id is Incorrect");
                     String password = InputUtils.inputString("Please Enter Your Password", "Please Enter a Valid Password");
-                    User user = Manager.login(email, password);
+                    User user = Manager.login(email, password, managerCredentialsFilePath);
                     if (user != null) {
                         return user;
                     } else {

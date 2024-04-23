@@ -13,13 +13,14 @@ import java.util.Set;
 
 public class Manager extends User {
     private Set<String> actions = new HashSet<>();
+
     public Manager(String name, String email, String password, String allActions) {
         super(name, email, password);
         String[] actionsArr = allActions.split("_");
         this.actions.addAll(Arrays.asList(actionsArr));
     }
-    public static Manager login(String email, String password) {
-        String path = "data/ManagerCredentials.csv";
+
+    public static Manager login(String email, String password, String path) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path)))) {
             String line;
             while ((line = br.readLine()) != null) {
