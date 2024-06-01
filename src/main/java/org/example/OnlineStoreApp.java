@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -31,12 +32,14 @@ public class OnlineStoreApp {
     private Set<Customer> customerSet;
     private Map<String, Set<CartItem>> shoppingCart;
     private Map<String, Set<Order>> orderHistory;
+    private Map<String, Set<Product>> wishList;
 
     public OnlineStoreApp() {
         products = new ArrayList<>();
         customerSet = new HashSet<>();
         shoppingCart = new TreeMap<>();
         orderHistory = new TreeMap<>();
+        wishList = new HashMap<>();
         managerCredentialsFilePath = addManagerCredentialsFilePath();
     }
 
@@ -209,6 +212,24 @@ public class OnlineStoreApp {
         }
     }
 
+    public void addToWishList(String productId, String customerId) {
+        Map<String, Product> productMap = products.stream()
+                .collect(Collectors.toMap(Product::getProductId, Function.identity()));
+        if (!productMap.containsKey(productId)) {
+            throw new RuntimeException("Product Id is not available in store");
+        }
+        Product p = productMap.get(productId);
+        if (wishList.containsKey(customerId)) {
+            Set<Product> customerWishList = wishList.get(customerId);
+            customerWishList.add(p);
+            wishList.put(customerId, customerWishList);
+        } else {
+            Set<Product> customerWishList = new HashSet<>();
+            customerWishList.add(p);
+            wishList.put(customerId, customerWishList);
+        }
+    }
+
     // Method to display a list of all products in the store
     public void displayProducts() {
         System.out.println("Product List:");
@@ -308,6 +329,17 @@ public class OnlineStoreApp {
         }
     }
 
+    public void viewWishList(String customerId) {
+        Set<Product> wishListProducts = wishList.get(customerId);
+        if (wishListProducts == null || wishListProducts.isEmpty()) {
+            System.out.println("WishList is Empty");
+            return;
+        }
+        for (Product p : wishListProducts) {
+            System.out.println(p.getProductId() + " " + p.getName());
+        }
+    }
+
     public void clearCart(String customerId) {
         shoppingCart.remove(customerId);
     }
@@ -334,8 +366,7 @@ public class OnlineStoreApp {
                 while (true) {
                     System.out.println("Please enter your store credentials:");
                     String email = InputUtils.inputStringWithRegexCheck("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", "Please Enter Email:", "Email Id is Incorrect");
-                    String password = InputUtils.inputString("Please Enter Your Password", "Please Enter a Valid Password");
-                    User user = Customer.login(email, password, customerSet);
+                    User user = Customer.login(email, customerSet);
                     if (user != null) {
                         return user;
                     } else {

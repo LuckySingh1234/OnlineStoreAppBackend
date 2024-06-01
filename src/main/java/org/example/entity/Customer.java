@@ -24,9 +24,9 @@ public class Customer extends User {
         super(id, name, email, password);
     }
 
-    public static Customer login(String email, String password, Set<Customer> customerSet) {
+    public static Customer login(String email, Set<Customer> customerSet) {
         for(Customer c : customerSet) {
-            if (email.equals(c.getEmail()) && password.equals(c.getPassword())) {
+            if (email.equals(c.getEmail())) {
                 System.out.println("Logged In Successfully");
                 System.out.println("Welcome " + c.getName());
                 return new Customer(c.getId(), c.getName(), c.getEmail(), c.getPassword());
@@ -225,10 +225,12 @@ public class Customer extends User {
         System.out.println("Enter 1 to View All Products In Store");
         System.out.println("Enter 2 to Add to Cart");
         System.out.println("Enter 3 to View Cart Items");
-        System.out.println("Enter 4 to Clear Cart Items");
-        System.out.println("Enter 5 to Place Order");
-        System.out.println("Enter 6 to View All Order Details");
-        System.out.println("Enter 7 to Sign Out");
+        System.out.println("Enter 4 to add to WishList");
+        System.out.println("Enter 5 to see Wish List");
+        System.out.println("Enter 6 to Clear Cart Items");
+        System.out.println("Enter 7 to Place Order");
+        System.out.println("Enter 8 to View All Order Details");
+        System.out.println("Enter 9 to Sign Out");
     }
 
     @Override
@@ -268,11 +270,27 @@ public class Customer extends User {
                 case 3: {
                     store.viewCart(this.getId());
                     break;
-                } case 4: {
-                    store.clearCart(this.getId());
+                }
+                case 4: {
+                    System.out.println("Enter Product Id");
+                    String productId = sc.nextLine();
+                    try {
+                        store.addToWishList(productId, this.getId());
+                        System.out.println("Successfully added to Wish List");
+                    } catch (Exception e) {
+                        System.out.println("Error while adding to wish list: " + e.getMessage());
+                    }
                     break;
                 }
                 case 5: {
+                    store.viewWishList(this.getId());
+                    break;
+                }
+                case 6: {
+                    store.clearCart(this.getId());
+                    break;
+                }
+                case 7: {
                     try {
                         store.placeOrder(store.getNextOrderId(), this.getId());
                     } catch (Exception e) {
@@ -282,17 +300,17 @@ public class Customer extends User {
                     System.out.println("Order Placed Successfully");
                     break;
                 }
-                case 6: {
+                case 8: {
                     store.displayOrders(this.getId());
                     break;
                 }
-                case 7: {
+                case 9: {
                     break;
                 }
                 default: {
                     System.out.println("Please Enter Valid Choice");
                 }
             }
-        } while (choice != 7);
+        } while (choice != 9);
     }
 }
